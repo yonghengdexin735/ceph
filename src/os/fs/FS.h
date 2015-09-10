@@ -105,7 +105,7 @@ public:
 	  return r;
 	}
 	assert(r == 1);
-      } while (false);
+      } while (true);
       return 0;
     }
 
