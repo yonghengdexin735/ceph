@@ -1046,8 +1046,6 @@ int NewStore::umount()
   dout(20) << __func__ << " closing" << dendl;
 
   mounted = false;
-  if (fset_fd >= 0)
-    VOID_TEMP_FAILURE_RETRY(::close(fset_fd));
   _close_db();
   _close_frag();
   _close_fsid();
