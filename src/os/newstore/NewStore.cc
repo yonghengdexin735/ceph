@@ -1295,11 +1295,13 @@ int NewStore::_do_read(
 	  VOID_TEMP_FAILURE_RETRY(::close(fd));
 	}
 	fd = _open_fid(cur_fid, O_RDONLY);
-	if (fd < 0) {
-	  r = fd;
-	  goto out;
-	}
       }
+      // make sure we have a file descriptor
+      if (fd < 0) {
+	r = fd;
+	goto out;
+      }
+
       uint64_t x_off = offset - fp->first - fp->second.offset;
       x_len = MIN(x_len, fp->second.length - x_off);
       dout(30) << __func__ << " data " << fp->first << " " << fp->second
