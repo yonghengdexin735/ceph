@@ -418,6 +418,7 @@ fi
 %{_bindir}/ceph-coverage
 %{_bindir}/ceph_mon_store_converter
 %{_initrddir}/ceph
+%{_sbindir}/mkcephfs
 %{_sbindir}/ceph-disk
 %{_sbindir}/ceph-disk-activate
 %{_sbindir}/ceph-disk-prepare
