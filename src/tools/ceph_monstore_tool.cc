@@ -94,7 +94,6 @@ public:
   }
 };
 
-
 int parse_cmd_args(
     po::options_description *desc, /// < visible options description
     po::options_description *hidden_desc, /// < hidden options description
@@ -211,6 +210,71 @@ void usage(const char *n, po::options_description &d)
     << "* Command-specific options need to be passed after a '--'\n"
     << "  e.g., 'get monmap -- --version 10 --out /tmp/foo'"
     << std::endl;
+}
+
+int inflate_pgmap(MonitorDBStore& st, unsigned ntrans, bool can_be_trimmed) {
+  // put latest pg map into monstore to bloat it up
+  // only format version == 1 is supported
+  version_t last = st.get("pgmap", "last_committed");
+  bufferlist bl;
+  
+  // get the latest delta
+  int r = st.get("pgmap", last, bl);
+  if (r) {
+    std::cerr << "Error getting pgmap: " << cpp_strerror(r) << std::endl;
+    return r;
+  }
+  
+  // try to pull together an idempotent "delta"
+  ceph::unordered_map<pg_t, pg_stat_t> pg_stat;
+  for (KeyValueDB::Iterator i = st.get_iterator("pgmap_pg");
+       i->valid(); i->next()) {
+    pg_t pgid;
+    if (!pgid.parse(i->key().c_str())) {
+      std::cerr << "unable to parse key " << i->key() << std::endl;
+      continue;
+    }
+    bufferlist pg_bl = i->value();
+    pg_stat_t ps;
+    bufferlist::iterator p = pg_bl.begin();
+    ::decode(ps, p);
+    // will update the last_epoch_clean of all the pgs.
+    pg_stat[pgid] = ps;
+  }
+  
+  version_t first = st.get("pgmap", "first_committed");
+  version_t ver = last;
+  MonitorDBStore::TransactionRef txn(new MonitorDBStore::Transaction);
+  for (unsigned i = 0; i < ntrans; i++) {
+    bufferlist trans_bl;
+    bufferlist dirty_pgs;
+    for (ceph::unordered_map<pg_t, pg_stat_t>::iterator ps = pg_stat.begin();
+	 ps != pg_stat.end(); ++ps) {
+      ::encode(ps->first, dirty_pgs);
+      if (!can_be_trimmed) {
+	ps->second.last_epoch_clean = first;
+      }
+      ::encode(ps->second, dirty_pgs);
+    }
+    utime_t inc_stamp = ceph_clock_now(NULL);
+    ::encode(inc_stamp, trans_bl);
+    ::encode_destructively(dirty_pgs, trans_bl);
+    bufferlist dirty_osds;
+    ::encode(dirty_osds, trans_bl);
+    txn->put("pgmap", ++ver, trans_bl);
+    std::cout << "adding pgmap#" << ver << "/" << last + ntrans << std::endl;
+    if (txn->size() > MIN(ntrans / 0xff, 512)) {
+      std::cout << "=== flushing ===" << std::endl;
+      st.apply_transaction(txn);
+      // reset the transaction
+      txn.reset(new MonitorDBStore::Transaction);
+    }
+  }
+  txn->put("pgmap", "last_committed", ver);
+  txn->put("pgmap_meta", "version", ver);
+  // this will also piggy back the leftover pgmap added in the loop above
+  st.apply_transaction(txn);
+  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -692,6 +756,30 @@ int main(int argc, char **argv) {
               << stringify(si_t(total_size)) << std::endl;
     std::cout << "from '" << store_path << "' to '" << out_path << "'"
               << std::endl;
+  } else if (cmd == "inflate-pgmap") {
+    unsigned ntrans = 2000;
+    bool can_be_trimmed = false;
+    po::options_description op_desc("Allowed 'inflate-pgmap' options");
+    op_desc.add_options()
+      ("ntrans,n", po::value<unsigned>(&ntrans),
+       "number of maps to add (default: 2000)")
+      ("can-be-trimmed", po::value<bool>(&can_be_trimmed),
+       "can be trimmed (default: false)")
+      ;
+
+    po::variables_map op_vm;
+    try {
+      po::parsed_options op_parsed = po::command_line_parser(subcmds).
+        options(op_desc).run();
+      po::store(op_parsed, op_vm);
+      po::notify(op_vm);
+    } catch (po::error &e) {
+      std::cerr << "error: " << e.what() << std::endl;
+      err = EINVAL;
+      goto done;
+    }
+
+    err = inflate_pgmap(st, ntrans, can_be_trimmed);
   } else {
     std::cerr << "Unrecognized command: " << cmd << std::endl;
     usage(argv[0], desc);
