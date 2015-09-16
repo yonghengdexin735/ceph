@@ -598,7 +598,7 @@ bool coll_t::parse(const std::string& s)
     assert(s == _str);
     return true;
   }
-  if (s.find("FORREMOVAL_") == 0) {
+  if (s.compare(0, 11, "FORREMOVAL_") == 0) {
     type = TYPE_PG_REMOVAL;
     stringstream ss(s.substr(11));
     ss >> removal_seq;
