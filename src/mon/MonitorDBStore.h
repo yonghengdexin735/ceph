@@ -166,7 +166,7 @@ class MonitorDBStore
       return (size() == 0);
     }
 
-    bool size() {
+    size_t size() const {
       return ops.size();
     }
 
