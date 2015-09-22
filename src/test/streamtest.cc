@@ -85,14 +85,14 @@ void set_commit(off_t off, utime_t t)
 
 struct C_Ack : public Context {
   off_t off;
-  C_Ack(off_t o) : off(o) {}
+  explicit C_Ack(off_t o) : off(o) {}
   void finish(int r) {
     set_ack(off, ceph_clock_now(g_ceph_context));
   }
 };
 struct C_Commit : public Context {
   off_t off;
-  C_Commit(off_t o) : off(o) {}
+  explicit C_Commit(off_t o) : off(o) {}
   void finish(int r) {
     set_commit(off, ceph_clock_now(g_ceph_context));
   }

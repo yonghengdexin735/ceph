@@ -173,7 +173,7 @@ private:
   void sync_entry();
   struct SyncThread : public Thread {
     FileStore *fs;
-    SyncThread(FileStore *f) : fs(f) {}
+    explicit SyncThread(FileStore *f) : fs(f) {}
     void *entry() {
       fs->sync_entry();
       return 0;
@@ -783,7 +783,7 @@ protected:
   }
 
 public:
-  FileStoreBackend(FileStore *fs) : filestore(fs) {}
+  explicit FileStoreBackend(FileStore *fs) : filestore(fs) {}
   virtual ~FileStoreBackend() {}
 
   static FileStoreBackend *create(long f_type, FileStore *fs);

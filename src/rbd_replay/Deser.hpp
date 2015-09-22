@@ -27,7 +27,7 @@ namespace rbd_replay {
 */
 class Deser {
 public:
-  Deser(std::istream &in);
+  explicit Deser(std::istream &in);
 
   uint8_t read_uint8_t();
 

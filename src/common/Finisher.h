@@ -59,7 +59,7 @@ class Finisher {
 
   struct FinisherThread : public Thread {
     Finisher *fin;    
-    FinisherThread(Finisher *f) : fin(f) {}
+    explicit FinisherThread(Finisher *f) : fin(f) {}
     void* entry() { return (void*)fin->finisher_thread_entry(); }
   } finisher_thread;
 
@@ -131,7 +131,7 @@ class Finisher {
 
   /// Construct an anonymous Finisher.
   /// Anonymous finishers do not log their queue length.
-  Finisher(CephContext *cct_) :
+  explicit Finisher(CephContext *cct_) :
     cct(cct_), finisher_lock("Finisher::finisher_lock"),
     finisher_stop(false), finisher_running(false),
     logger(0),

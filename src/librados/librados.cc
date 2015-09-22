@@ -176,7 +176,7 @@ class ObjectOpCompletionCtx : public Context {
   librados::ObjectOperationCompletion *completion;
   bufferlist bl;
 public:
-  ObjectOpCompletionCtx(librados::ObjectOperationCompletion *c) : completion(c) {}
+  explicit ObjectOpCompletionCtx(librados::ObjectOperationCompletion *c) : completion(c) {}
   void finish(int r) {
     completion->handle_completion(r, bl);
     delete completion;
@@ -4604,7 +4604,7 @@ struct RadosOmapIter {
 class C_OmapIter : public Context {
   RadosOmapIter *iter;
 public:
-  C_OmapIter(RadosOmapIter *iter) : iter(iter) {}
+  explicit C_OmapIter(RadosOmapIter *iter) : iter(iter) {}
   void finish(int r) {
     iter->i = iter->values.begin();
   }
@@ -4613,7 +4613,7 @@ public:
 class C_XattrsIter : public Context {
   librados::RadosXattrsIter *iter;
 public:
-  C_XattrsIter(librados::RadosXattrsIter *iter) : iter(iter) {}
+  explicit C_XattrsIter(librados::RadosXattrsIter *iter) : iter(iter) {}
   void finish(int r) {
     iter->i = iter->attrset.begin();
   }
@@ -4655,7 +4655,7 @@ extern "C" void rados_read_op_omap_get_vals(rados_read_op_t read_op,
 struct C_OmapKeysIter : public Context {
   RadosOmapIter *iter;
   std::set<std::string> keys;
-  C_OmapKeysIter(RadosOmapIter *iter) : iter(iter) {}
+  explicit C_OmapKeysIter(RadosOmapIter *iter) : iter(iter) {}
   void finish(int r) {
     // map each key to an empty bl
     for (std::set<std::string>::const_iterator i = keys.begin();

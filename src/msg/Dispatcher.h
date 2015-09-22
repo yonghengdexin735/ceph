@@ -24,7 +24,7 @@ class Messenger;
 
 class Dispatcher {
 public:
-  Dispatcher(CephContext *cct_)
+  explicit Dispatcher(CephContext *cct_)
     : cct(cct_)
   {
   }

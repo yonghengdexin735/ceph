@@ -52,7 +52,7 @@ int RGWRESTConn::forward(const string& uid, req_info& info, obj_version *objv, s
 class StreamObjData : public RGWGetDataCB {
   rgw_obj obj;
 public:
-    StreamObjData(rgw_obj& _obj) : obj(_obj) {}
+    explicit StreamObjData(rgw_obj& _obj) : obj(_obj) {}
 };
 
 int RGWRESTConn::put_obj_init(const string& uid, rgw_obj& obj, uint64_t obj_size,

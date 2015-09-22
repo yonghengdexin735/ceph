@@ -227,7 +227,7 @@ class DeletingState {
 public:
   const spg_t pgid;
   const PGRef old_pg_state;
-  DeletingState(const pair<spg_t, PGRef> &in) :
+  explicit DeletingState(const pair<spg_t, PGRef> &in) :
     lock("DeletingState::lock"), status(QUEUED), stop_deleting(false),
     pgid(in.first), old_pg_state(in.second) {
     }
@@ -318,7 +318,7 @@ class OSD;
 
 struct PGScrub {
   epoch_t epoch_queued;
-  PGScrub(epoch_t e) : epoch_queued(e) {}
+  explicit PGScrub(epoch_t e) : epoch_queued(e) {}
   ostream &operator<<(ostream &rhs) {
     return rhs << "PGScrub";
   }
@@ -326,7 +326,7 @@ struct PGScrub {
 
 struct PGSnapTrim {
   epoch_t epoch_queued;
-  PGSnapTrim(epoch_t e) : epoch_queued(e) {}
+  explicit PGSnapTrim(epoch_t e) : epoch_queued(e) {}
   ostream &operator<<(ostream &rhs) {
     return rhs << "PGSnapTrim";
   }
@@ -657,7 +657,7 @@ public:
   bool agent_active;
   struct AgentThread : public Thread {
     OSDService *osd;
-    AgentThread(OSDService *o) : osd(o) {}
+    explicit AgentThread(OSDService *o) : osd(o) {}
     void *entry() {
       osd->agent_entry();
       return NULL;
@@ -1019,7 +1019,7 @@ public:
   }
 #endif
 
-  OSDService(OSD *osd);
+  explicit OSDService(OSD *osd);
   ~OSDService();
 };
 
@@ -1077,7 +1077,7 @@ protected:
   class C_Tick : public Context {
     OSD *osd;
   public:
-    C_Tick(OSD *o) : osd(o) {}
+    explicit C_Tick(OSD *o) : osd(o) {}
     void finish(int r) {
       osd->tick();
     }
@@ -1086,7 +1086,7 @@ protected:
   class C_Tick_WithoutOSDLock : public Context {
     OSD *osd;
   public:
-    C_Tick_WithoutOSDLock(OSD *o) : osd(o) {}
+    explicit C_Tick_WithoutOSDLock(OSD *o) : osd(o) {}
     void finish(int r) {
       osd->tick_without_osd_lock();
     }
@@ -1294,7 +1294,7 @@ public:
     Mutex received_map_lock;
     epoch_t received_map_epoch; // largest epoch seen in MOSDMap from here
 
-    Session(CephContext *cct) :
+    explicit Session(CephContext *cct) :
       RefCountedObject(cct),
       auid(-1), con(0),
       session_dispatch_lock("Session::session_dispatch_lock"),
@@ -1493,7 +1493,7 @@ private:
   /// state attached to outgoing heartbeat connections
   struct HeartbeatSession : public RefCountedObject {
     int peer;
-    HeartbeatSession(int p) : peer(p) {}
+    explicit HeartbeatSession(int p) : peer(p) {}
   };
   Mutex heartbeat_lock;
   map<int, int> debug_heartbeat_drops_remaining;
@@ -1534,7 +1534,7 @@ private:
 
   struct T_Heartbeat : public Thread {
     OSD *osd;
-    T_Heartbeat(OSD *o) : osd(o) {}
+    explicit T_Heartbeat(OSD *o) : osd(o) {}
     void *entry() {
       osd->heartbeat_entry();
       return 0;
@@ -1546,7 +1546,7 @@ public:
 
   struct HeartbeatDispatcher : public Dispatcher {
     OSD *osd;
-    HeartbeatDispatcher(OSD *o) : Dispatcher(cct), osd(o) {}
+    explicit HeartbeatDispatcher(OSD *o) : Dispatcher(cct), osd(o) {}
     bool ms_dispatch(Message *m) {
       return osd->heartbeat_dispatch(m);
     }
@@ -1671,7 +1671,7 @@ private:
 
     struct Pred {
       PG *pg;
-      Pred(PG *pg) : pg(pg) {}
+      explicit Pred(PG *pg) : pg(pg) {}
       bool operator()(const pair<PGRef, PGQueueable> &op) {
 	return op.first == pg;
       }
@@ -1984,7 +1984,7 @@ protected:
   class C_MonStatsAckTimer : public Context {
     OSD *osd;
   public:
-    C_MonStatsAckTimer(OSD *o) : osd(o) {}
+    explicit C_MonStatsAckTimer(OSD *o) : osd(o) {}
     void finish(int r) {
       osd->restart_stats_timer();
     }

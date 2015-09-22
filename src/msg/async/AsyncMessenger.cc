@@ -54,7 +54,7 @@ class C_processor_accept : public EventCallback {
   Processor *pro;
 
  public:
-  C_processor_accept(Processor *p): pro(p) {}
+  explicit C_processor_accept(Processor *p): pro(p) {}
   void do_request(int id) {
     pro->accept();
   }

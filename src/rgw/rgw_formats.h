@@ -65,7 +65,7 @@ protected:
     formatter = f;
   }
 public:
-  RGWFormatterFlusher(Formatter *f) : formatter(f), flushed(false), started(false) {}
+  explicit RGWFormatterFlusher(Formatter *f) : formatter(f), flushed(false), started(false) {}
   virtual ~RGWFormatterFlusher() {}
 
   void flush() {

@@ -1468,7 +1468,7 @@ namespace {
     typedef CrushTreeDumper::Item Item;
     const CrushWrapper *crush;
   public:
-    TreeDumper(const CrushWrapper *crush)
+    explicit TreeDumper(const CrushWrapper *crush)
       : crush(crush) {}
 
     void dump(Formatter *f) {
@@ -1635,7 +1635,7 @@ class CrushTreePlainDumper : public CrushTreeDumper::Dumper<ostream> {
 public:
   typedef CrushTreeDumper::Dumper<ostream> Parent;
 
-  CrushTreePlainDumper(const CrushWrapper *crush)
+  explicit CrushTreePlainDumper(const CrushWrapper *crush)
     : Parent(crush) {}
 
   void dump(ostream *out) {
@@ -1669,7 +1669,7 @@ class CrushTreeFormattingDumper : public CrushTreeDumper::FormattingDumper {
 public:
   typedef CrushTreeDumper::FormattingDumper Parent;
 
-  CrushTreeFormattingDumper(const CrushWrapper *crush)
+  explicit CrushTreeFormattingDumper(const CrushWrapper *crush)
     : Parent(crush) {}
 
   void dump(Formatter *f) {

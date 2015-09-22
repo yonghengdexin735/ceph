@@ -80,7 +80,7 @@ public:
 
   InodeRef target;
 
-  MetaRequest(int op) :
+  explicit MetaRequest(int op) :
     _dentry(NULL), _old_dentry(NULL),
     tid(0),
     inode_drop(0), inode_unless(0),

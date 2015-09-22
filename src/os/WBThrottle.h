@@ -139,7 +139,7 @@ private:
   }
 
 public:
-  WBThrottle(CephContext *cct);
+  explicit WBThrottle(CephContext *cct);
   ~WBThrottle();
 
   void start();

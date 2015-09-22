@@ -116,7 +116,7 @@ class ObjectCacher {
     map< loff_t, list<Context*> > waitfor_read;
     
     // cons
-    BufferHead(Object *o) : 
+    explicit BufferHead(Object *o) : 
       state(STATE_MISSING),
       ref(0),
       dontneed(false),
@@ -378,7 +378,7 @@ class ObjectCacher {
   class FlusherThread : public Thread {
     ObjectCacher *oc;
   public:
-    FlusherThread(ObjectCacher *o) : oc(o) {}
+    explicit FlusherThread(ObjectCacher *o) : oc(o) {}
     void *entry() {
       oc->flusher_entry();
       return 0;

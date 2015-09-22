@@ -40,8 +40,8 @@ struct MDSCapMatch {
   std::string path;  // Require path to be child of this (may be "/" for any)
 
   MDSCapMatch() : uid(MDS_AUTH_UID_ANY), path(MDS_AUTH_PATH_ROOT) {}
-  MDSCapMatch(int uid_) : uid(uid_), path(MDS_AUTH_PATH_ROOT) {}
-  MDSCapMatch(std::string path_) : uid(MDS_AUTH_UID_ANY), path(path_) {}
+  explicit MDSCapMatch(int uid_) : uid(uid_), path(MDS_AUTH_PATH_ROOT) {}
+  explicit MDSCapMatch(std::string path_) : uid(MDS_AUTH_UID_ANY), path(path_) {}
   MDSCapMatch(std::string path_, int uid_) : uid(uid_), path(path_) {}
   
   bool is_match_all() const
@@ -71,7 +71,7 @@ class MDSAuthCaps
     void set_allow_all();
     bool parse(const std::string &str, std::ostream *err);
     MDSAuthCaps() {}
-    MDSAuthCaps(const std::vector<MDSCapGrant> &grants_) : grants(grants_) {}
+    explicit MDSAuthCaps(const std::vector<MDSCapGrant> &grants_) : grants(grants_) {}
 
     bool allow_all() const;
     bool is_capable(const std::string &path, int uid, bool may_read, bool may_write) const;

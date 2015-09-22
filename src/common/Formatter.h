@@ -92,7 +92,7 @@ namespace ceph {
 
   class JSONFormatter : public Formatter {
   public:
-    JSONFormatter(bool p = false);
+    explicit JSONFormatter(bool p = false);
 
     void flush(std::ostream& os);
     void reset();
@@ -133,7 +133,7 @@ namespace ceph {
   class XMLFormatter : public Formatter {
   public:
     static const char *XML_1_DTD;
-    XMLFormatter(bool pretty = false);
+    explicit XMLFormatter(bool pretty = false);
 
     void flush(std::ostream& os);
     void reset();
@@ -170,7 +170,7 @@ namespace ceph {
 
   class TableFormatter : public Formatter {
   public:
-    TableFormatter(bool keyval = false);
+    explicit TableFormatter(bool keyval = false);
 
     void flush(std::ostream& os);
     void reset();

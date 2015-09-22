@@ -130,7 +130,7 @@ class WorkerPool: CephContext::AssociatedSingletonObject {
   class C_barrier : public EventCallback {
     WorkerPool *pool;
    public:
-    C_barrier(WorkerPool *p): pool(p) {}
+    explicit C_barrier(WorkerPool *p): pool(p) {}
     void do_request(int id) {
       Mutex::Locker l(pool->barrier_lock);
       pool->barrier_count.dec();
@@ -139,7 +139,7 @@ class WorkerPool: CephContext::AssociatedSingletonObject {
   };
   friend class C_barrier;
  public:
-  WorkerPool(CephContext *c);
+  explicit WorkerPool(CephContext *c);
   virtual ~WorkerPool();
   void start();
   Worker *get_worker() {

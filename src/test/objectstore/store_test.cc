@@ -1044,7 +1044,7 @@ class MixedGenerator : public ObjectGenerator {
 public:
   unsigned seq;
   int64_t poolid;
-  MixedGenerator(int64_t p) : seq(0), poolid(p) {}
+  explicit MixedGenerator(int64_t p) : seq(0), poolid(p) {}
   ghobject_t create_object(gen_type *gen) {
     char buf[100];
     snprintf(buf, sizeof(buf), "%u", seq);

@@ -55,7 +55,7 @@ class OpTracker {
   class RemoveOnDelete {
     OpTracker *tracker;
   public:
-    RemoveOnDelete(OpTracker *tracker) : tracker(tracker) {}
+    explicit RemoveOnDelete(OpTracker *tracker) : tracker(tracker) {}
     void operator()(TrackedOp *op);
   };
   friend class RemoveOnDelete;
@@ -64,7 +64,7 @@ class OpTracker {
   struct ShardedTrackingData {
     Mutex ops_in_flight_lock_sharded;
     xlist<TrackedOp *> ops_in_flight_sharded;
-    ShardedTrackingData(string lock_name):
+    explicit ShardedTrackingData(string lock_name):
         ops_in_flight_lock_sharded(lock_name.c_str()) {}
   };
   vector<ShardedTrackingData*> sharded_in_flight_list;

@@ -514,7 +514,7 @@ private:
   int add(RGWUserAdminOpState& op_state, std::string *err_msg, bool defer_save);
   int remove(RGWUserAdminOpState& op_state, std::string *err_msg, bool defer_save);
 public:
-  RGWAccessKeyPool(RGWUser* usr);
+  explicit RGWAccessKeyPool(RGWUser* usr);
   ~RGWAccessKeyPool();
 
   int init(RGWUserAdminOpState& op_state);
@@ -549,7 +549,7 @@ private:
   int remove(RGWUserAdminOpState& op_state, std::string *err_msg, bool defer_save);
   int modify(RGWUserAdminOpState& op_state, std::string *err_msg, bool defer_save);
 public:
-  RGWSubUserPool(RGWUser *user);
+  explicit RGWSubUserPool(RGWUser *user);
   ~RGWSubUserPool();
 
   bool exists(std::string subuser);
@@ -574,7 +574,7 @@ private:
   int remove(RGWUserAdminOpState& op_state, std::string *err_msg, bool defer_save);
 
 public:
-  RGWUserCapPool(RGWUser *user);
+  explicit RGWUserCapPool(RGWUser *user);
   ~RGWUserCapPool();
 
   int init(RGWUserAdminOpState& op_state);

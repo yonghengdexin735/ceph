@@ -27,7 +27,7 @@ namespace rbd_replay {
 */
 class Ser {
 public:
-  Ser(std::ostream &out);
+  explicit Ser(std::ostream &out);
 
   void write_uint8_t(uint8_t);
 

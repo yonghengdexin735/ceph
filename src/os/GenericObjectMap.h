@@ -75,7 +75,7 @@ class GenericObjectMap {
    */
   Mutex header_lock;
 
-  GenericObjectMap(KeyValueDB *db) : db(db), header_lock("GenericObjectMap") {}
+  explicit GenericObjectMap(KeyValueDB *db) : db(db), header_lock("GenericObjectMap") {}
 
   int get(
     const coll_t &cid,
@@ -138,7 +138,7 @@ class GenericObjectMap {
     __u8 v;
     uint64_t seq;
     State() : v(0), seq(1) {}
-    State(uint64_t seq) : v(0), seq(seq) {}
+    explicit State(uint64_t seq) : v(0), seq(seq) {}
 
     void encode(bufferlist &bl) const {
       ENCODE_START(1, 1, bl);

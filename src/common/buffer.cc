@@ -144,7 +144,7 @@ static simple_spinlock_t buffer_debug_lock = SIMPLE_SPINLOCK_INITIALIZER;
     mutable RWLock crc_lock;
     map<pair<size_t, size_t>, pair<uint32_t, uint32_t> > crc_map;
 
-    raw(unsigned l)
+    explicit raw(unsigned l)
       : data(NULL), len(l), nref(0),
 	crc_lock("buffer::raw::crc_lock", false)
     { }
@@ -218,7 +218,7 @@ static simple_spinlock_t buffer_debug_lock = SIMPLE_SPINLOCK_INITIALIZER;
 
   class buffer::raw_malloc : public buffer::raw {
   public:
-    raw_malloc(unsigned l) : raw(l) {
+    explicit raw_malloc(unsigned l) : raw(l) {
       if (len) {
 	data = (char *)malloc(len);
         if (!data)
@@ -246,7 +246,7 @@ static simple_spinlock_t buffer_debug_lock = SIMPLE_SPINLOCK_INITIALIZER;
 #ifndef __CYGWIN__
   class buffer::raw_mmap_pages : public buffer::raw {
   public:
-    raw_mmap_pages(unsigned l) : raw(l) {
+    explicit raw_mmap_pages(unsigned l) : raw(l) {
       data = (char*)::mmap(NULL, len, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
       if (!data)
 	throw bad_alloc();
@@ -325,7 +325,7 @@ static simple_spinlock_t buffer_debug_lock = SIMPLE_SPINLOCK_INITIALIZER;
 #ifdef CEPH_HAVE_SPLICE
   class buffer::raw_pipe : public buffer::raw {
   public:
-    raw_pipe(unsigned len) : raw(len), source_consumed(false) {
+    explicit raw_pipe(unsigned len) : raw(len), source_consumed(false) {
       size_t max = get_max_pipe_size();
       if (len > max) {
 	bdout << "raw_pipe: requested length " << len
@@ -504,7 +504,7 @@ static simple_spinlock_t buffer_debug_lock = SIMPLE_SPINLOCK_INITIALIZER;
    */
   class buffer::raw_char : public buffer::raw {
   public:
-    raw_char(unsigned l) : raw(l) {
+    explicit raw_char(unsigned l) : raw(l) {
       if (len)
 	data = new char[len];
       else
@@ -528,7 +528,7 @@ static simple_spinlock_t buffer_debug_lock = SIMPLE_SPINLOCK_INITIALIZER;
 
   class buffer::raw_unshareable : public buffer::raw {
   public:
-    raw_unshareable(unsigned l) : raw(l) {
+    explicit raw_unshareable(unsigned l) : raw(l) {
       if (len)
 	data = new char[len];
       else

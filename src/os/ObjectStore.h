@@ -167,7 +167,7 @@ public:
     string name;
     Sequencer_implRef p;
 
-    Sequencer(string n)
+    explicit Sequencer(string n)
       : name(n), p(NULL) {}
     ~Sequencer() {
     }
@@ -782,7 +782,7 @@ public:
       vector<ghobject_t> objects;
 
     private:
-      iterator(Transaction *t)
+      explicit iterator(Transaction *t)
         : t(t),
 	  data_bl_p(t->data_bl.begin()),
           colls(t->coll_index.size()),
@@ -1460,7 +1460,7 @@ public:
       coll_id(0),
       object_id(0) { }
 
-    Transaction(bufferlist::iterator &dp) :
+    explicit Transaction(bufferlist::iterator &dp) :
       osr(NULL),
       use_tbl(false),
       coll_id(0),
@@ -1468,7 +1468,7 @@ public:
       decode(dp);
     }
 
-    Transaction(bufferlist &nbl) :
+    explicit Transaction(bufferlist &nbl) :
       osr(NULL),
       use_tbl(false),
       coll_id(0),
@@ -1583,7 +1583,7 @@ public:
 
   struct C_DeleteTransaction : public Context {
     ObjectStore::Transaction *t;
-    C_DeleteTransaction(ObjectStore::Transaction *tt) : t(tt) {}
+    explicit C_DeleteTransaction(ObjectStore::Transaction *tt) : t(tt) {}
     void finish(int r) {
       delete t;
     }
@@ -1667,7 +1667,7 @@ public:
   }
 
  public:
-  ObjectStore(const std::string& path_) : path(path_), logger(NULL) {}
+  explicit ObjectStore(const std::string& path_) : path(path_), logger(NULL) {}
   virtual ~ObjectStore() {}
 
   // no copying

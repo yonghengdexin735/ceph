@@ -281,7 +281,7 @@ public:
 
   struct Comparator {
     bool bitwise;
-    Comparator(bool b) : bitwise(b) {}
+    explicit Comparator(bool b) : bitwise(b) {}
     bool operator()(const hobject_t& l, const hobject_t& r) const {
       if (bitwise)
 	return cmp_bitwise(l, r) < 0;
@@ -291,7 +291,7 @@ public:
   };
   struct ComparatorWithDefault {
     bool bitwise;
-    ComparatorWithDefault(bool b=true) : bitwise(b) {}
+    explicit ComparatorWithDefault(bool b=true) : bitwise(b) {}
     bool operator()(const hobject_t& l, const hobject_t& r) const {
       if (bitwise)
 	return cmp_bitwise(l, r) < 0;
@@ -457,7 +457,7 @@ public:
 
   struct Comparator {
     bool bitwise;
-    Comparator(bool b) : bitwise(b) {}
+    explicit Comparator(bool b) : bitwise(b) {}
     bool operator()(const ghobject_t& l, const ghobject_t& r) const {
          if (bitwise)
 	return cmp_bitwise(l, r) < 0;

@@ -255,7 +255,7 @@ struct lookup_ghobject : public action_on_object_t {
   pgid_object_list _objects;
   const string _name;
 
-  lookup_ghobject(const string& name) : _name(name) { }
+  explicit lookup_ghobject(const string& name) : _name(name) { }
 
   virtual int call(ObjectStore *store, coll_t coll, ghobject_t &ghobj, object_info_t &oi) {
     if (_name.length() == 0 || ghobj.hobj.oid.name == _name)

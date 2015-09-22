@@ -285,7 +285,7 @@ int ObjBencher::aio_bench(
 }
 
 struct lock_cond {
-  lock_cond(Mutex *_lock) : lock(_lock) {}
+  explicit lock_cond(Mutex *_lock) : lock(_lock) {}
   Mutex *lock;
   Cond cond;
 };

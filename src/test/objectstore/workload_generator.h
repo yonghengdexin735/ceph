@@ -120,7 +120,7 @@ class WorkloadGenerator : public TestObjectStoreState {
   void do_stats();
 
 public:
-  WorkloadGenerator(vector<const char*> args);
+  explicit WorkloadGenerator(vector<const char*> args);
   ~WorkloadGenerator() {
     m_store->umount();
   }

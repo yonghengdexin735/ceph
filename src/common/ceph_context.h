@@ -53,7 +53,7 @@ using ceph::bufferlist;
  */
 class CephContext {
 public:
-  CephContext(uint32_t module_type_);
+  explicit CephContext(uint32_t module_type_);
 
   // ref count!
 private:

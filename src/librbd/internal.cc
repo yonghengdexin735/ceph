@@ -2438,7 +2438,7 @@ reprotect_and_return_err:
   }
 
   struct CopyProgressCtx {
-    CopyProgressCtx(ProgressContext &p)
+    explicit CopyProgressCtx(ProgressContext &p)
       : destictx(NULL), src_size(0), prog_ctx(p)
     { }
 

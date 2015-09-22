@@ -3021,7 +3021,7 @@ void ObjectModDesc::visit(Visitor *visitor) const
 
 struct DumpVisitor : public ObjectModDesc::Visitor {
   Formatter *f;
-  DumpVisitor(Formatter *f) : f(f) {}
+  explicit DumpVisitor(Formatter *f) : f(f) {}
   void append(uint64_t old_size) {
     f->open_object_section("op");
     f->dump_string("code", "APPEND");

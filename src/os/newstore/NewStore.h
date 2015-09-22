@@ -210,7 +210,7 @@ public:
 
     CollectionRef first_collection;  ///< first referenced collection
 
-    TransContext(OpSequencer *o)
+    explicit TransContext(OpSequencer *o)
       : state(STATE_PREPARE),
 	osr(o),
 	ops(0),
@@ -438,7 +438,7 @@ public:
 
   struct KVSyncThread : public Thread {
     NewStore *store;
-    KVSyncThread(NewStore *s) : store(s) {}
+    explicit KVSyncThread(NewStore *s) : store(s) {}
     void *entry() {
       store->_kv_sync_thread();
       return NULL;
@@ -447,7 +447,7 @@ public:
 
   struct AioCompletionThread : public Thread {
     NewStore *store;
-    AioCompletionThread(NewStore *s) : store(s) {}
+    explicit AioCompletionThread(NewStore *s) : store(s) {}
     void *entry() {
       store->_aio_thread();
       return NULL;

@@ -319,7 +319,7 @@ public:
   public:
     boost::scoped_ptr<IsPGReadablePredicate> is_readable;
     boost::scoped_ptr<IsPGRecoverablePredicate> is_recoverable;
-    MissingLoc(PG *pg)
+    explicit MissingLoc(PG *pg)
       : pg(pg) {}
     void set_backend_predicates(
       IsPGReadablePredicate *_is_readable,
@@ -656,7 +656,7 @@ public:
     hobject_t begin;
     hobject_t end;
 
-    BackfillInterval(bool bitwise=true)
+    explicit BackfillInterval(bool bitwise=true)
       : objects(hobject_t::Comparator(bitwise)),
 	sort_bitwise(bitwise)
     {}
@@ -1319,7 +1319,7 @@ public:
 
   struct QueryState : boost::statechart::event< QueryState > {
     Formatter *f;
-    QueryState(Formatter *f) : f(f) {}
+    explicit QueryState(Formatter *f) : f(f) {}
     void print(std::ostream *out) const {
       *out << "Query";
     }
@@ -1398,7 +1398,7 @@ public:
   };
   struct Activate : boost::statechart::event< Activate > {
     epoch_t activation_epoch;
-    Activate(epoch_t q) : boost::statechart::event< Activate >(),
+    explicit Activate(epoch_t q) : boost::statechart::event< Activate >(),
 			  activation_epoch(q) {}
     void print(std::ostream *out) const {
       *out << "Activate from " << activation_epoch;
@@ -1406,7 +1406,7 @@ public:
   };
   struct RequestBackfillPrio : boost::statechart::event< RequestBackfillPrio > {
     unsigned priority;
-    RequestBackfillPrio(unsigned prio) :
+    explicit RequestBackfillPrio(unsigned prio) :
               boost::statechart::event< RequestBackfillPrio >(),
 			  priority(prio) {}
     void print(std::ostream *out) const {
@@ -1530,14 +1530,14 @@ public:
     /* States */
 
     struct Crashed : boost::statechart::state< Crashed, RecoveryMachine >, NamedState {
-      Crashed(my_context ctx);
+      explicit Crashed(my_context ctx);
     };
 
     struct Started;
     struct Reset;
 
     struct Initial : boost::statechart::state< Initial, RecoveryMachine >, NamedState {
-      Initial(my_context ctx);
+      explicit Initial(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1557,7 +1557,7 @@ public:
     };
 
     struct Reset : boost::statechart::state< Reset, RecoveryMachine >, NamedState {
-      Reset(my_context ctx);
+      explicit Reset(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1582,7 +1582,7 @@ public:
     struct Start;
 
     struct Started : boost::statechart::state< Started, RecoveryMachine, Start >, NamedState {
-      Started(my_context ctx);
+      explicit Started(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1612,7 +1612,7 @@ public:
     struct Stray;
 
     struct Start : boost::statechart::state< Start, Started >, NamedState {
-      Start(my_context ctx);
+      explicit Start(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1632,7 +1632,7 @@ public:
     };
 
     struct Primary : boost::statechart::state< Primary, Started, Peering >, NamedState {
-      Primary(my_context ctx);
+      explicit Primary(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1653,7 +1653,7 @@ public:
 	boost::statechart::custom_reaction< MInfoRec >,
 	boost::statechart::custom_reaction< MNotifyRec >
 	> reactions;
-      WaitActingChange(my_context ctx);
+      explicit WaitActingChange(my_context ctx);
       boost::statechart::result react(const QueryState& q);
       boost::statechart::result react(const AdvMap&);
       boost::statechart::result react(const MLogRec&);
@@ -1668,7 +1668,7 @@ public:
     struct Peering : boost::statechart::state< Peering, Primary, GetInfo >, NamedState {
       std::unique_ptr< PriorSet > prior_set;
 
-      Peering(my_context ctx);
+      explicit Peering(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1683,7 +1683,7 @@ public:
     struct WaitLocalRecoveryReserved;
     struct Activating;
     struct Active : boost::statechart::state< Active, Primary, Activating >, NamedState {
-      Active(my_context ctx);
+      explicit Active(my_context ctx);
       void exit();
 
       const set<pg_shard_t> remote_shards_to_reserve_recovery;
@@ -1716,7 +1716,7 @@ public:
       typedef boost::mpl::list<
 	boost::statechart::transition< DoRecovery, WaitLocalRecoveryReserved >
       > reactions;
-      Clean(my_context ctx);
+      explicit Clean(my_context ctx);
       void exit();
     };
 
@@ -1725,7 +1725,7 @@ public:
 	boost::statechart::transition< GoClean, Clean >,
 	boost::statechart::custom_reaction< AllReplicasActivated >
       > reactions;
-      Recovered(my_context ctx);
+      explicit Recovered(my_context ctx);
       void exit();
       boost::statechart::result react(const AllReplicasActivated&) {
 	post_event(GoClean());
@@ -1738,7 +1738,7 @@ public:
 	boost::statechart::transition< Backfilled, Recovered >,
 	boost::statechart::custom_reaction< RemoteReservationRejected >
 	> reactions;
-      Backfilling(my_context ctx);
+      explicit Backfilling(my_context ctx);
       boost::statechart::result react(const RemoteReservationRejected& evt);
       void exit();
     };
@@ -1750,7 +1750,7 @@ public:
 	boost::statechart::transition< AllBackfillsReserved, Backfilling >
 	> reactions;
       set<pg_shard_t>::const_iterator backfill_osd_it;
-      WaitRemoteBackfillReserved(my_context ctx);
+      explicit WaitRemoteBackfillReserved(my_context ctx);
       void exit();
       boost::statechart::result react(const RemoteBackfillReserved& evt);
       boost::statechart::result react(const RemoteReservationRejected& evt);
@@ -1760,7 +1760,7 @@ public:
       typedef boost::mpl::list<
 	boost::statechart::transition< LocalBackfillReserved, WaitRemoteBackfillReserved >
 	> reactions;
-      WaitLocalBackfillReserved(my_context ctx);
+      explicit WaitLocalBackfillReserved(my_context ctx);
       void exit();
     };
 
@@ -1770,7 +1770,7 @@ public:
 	boost::statechart::custom_reaction< RemoteBackfillReserved >,
 	boost::statechart::custom_reaction< RemoteReservationRejected >
 	> reactions;
-      NotBackfilling(my_context ctx);
+      explicit NotBackfilling(my_context ctx);
       void exit();
       boost::statechart::result react(const RemoteBackfillReserved& evt);
       boost::statechart::result react(const RemoteReservationRejected& evt);
@@ -1778,7 +1778,7 @@ public:
 
     struct RepNotRecovering;
     struct ReplicaActive : boost::statechart::state< ReplicaActive, Started, RepNotRecovering >, NamedState {
-      ReplicaActive(my_context ctx);
+      explicit ReplicaActive(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1803,7 +1803,7 @@ public:
 	boost::statechart::transition< RemoteReservationRejected, RepNotRecovering >,
 	boost::statechart::custom_reaction< BackfillTooFull >
 	> reactions;
-      RepRecovering(my_context ctx);
+      explicit RepRecovering(my_context ctx);
       boost::statechart::result react(const BackfillTooFull &evt);
       void exit();
     };
@@ -1813,7 +1813,7 @@ public:
 	boost::statechart::custom_reaction< RemoteBackfillReserved >,
 	boost::statechart::custom_reaction< RemoteReservationRejected >
 	> reactions;
-      RepWaitBackfillReserved(my_context ctx);
+      explicit RepWaitBackfillReserved(my_context ctx);
       void exit();
       boost::statechart::result react(const RemoteBackfillReserved &evt);
       boost::statechart::result react(const RemoteReservationRejected &evt);
@@ -1823,7 +1823,7 @@ public:
       typedef boost::mpl::list<
 	boost::statechart::custom_reaction< RemoteRecoveryReserved >
 	> reactions;
-      RepWaitRecoveryReserved(my_context ctx);
+      explicit RepWaitRecoveryReserved(my_context ctx);
       void exit();
       boost::statechart::result react(const RemoteRecoveryReserved &evt);
     };
@@ -1834,7 +1834,7 @@ public:
         boost::statechart::transition< RequestRecovery, RepWaitRecoveryReserved >,
 	boost::statechart::transition< RecoveryDone, RepNotRecovering >  // for compat with pre-reservation peers
 	> reactions;
-      RepNotRecovering(my_context ctx);
+      explicit RepNotRecovering(my_context ctx);
       boost::statechart::result react(const RequestBackfillPrio &evt);
       void exit();
     };
@@ -1844,7 +1844,7 @@ public:
 	boost::statechart::custom_reaction< AllReplicasRecovered >,
 	boost::statechart::custom_reaction< RequestBackfill >
 	> reactions;
-      Recovering(my_context ctx);
+      explicit Recovering(my_context ctx);
       void exit();
       void release_reservations();
       boost::statechart::result react(const AllReplicasRecovered &evt);
@@ -1857,7 +1857,7 @@ public:
 	boost::statechart::transition< AllRemotesReserved, Recovering >
 	> reactions;
       set<pg_shard_t>::const_iterator remote_recovery_reservation_it;
-      WaitRemoteRecoveryReserved(my_context ctx);
+      explicit WaitRemoteRecoveryReserved(my_context ctx);
       boost::statechart::result react(const RemoteRecoveryReserved &evt);
       void exit();
     };
@@ -1866,7 +1866,7 @@ public:
       typedef boost::mpl::list <
 	boost::statechart::transition< LocalRecoveryReserved, WaitRemoteRecoveryReserved >
 	> reactions;
-      WaitLocalRecoveryReserved(my_context ctx);
+      explicit WaitLocalRecoveryReserved(my_context ctx);
       void exit();
     };
 
@@ -1876,14 +1876,14 @@ public:
 	boost::statechart::transition< DoRecovery, WaitLocalRecoveryReserved >,
 	boost::statechart::transition< RequestBackfill, WaitLocalBackfillReserved >
 	> reactions;
-      Activating(my_context ctx);
+      explicit Activating(my_context ctx);
       void exit();
     };
 
     struct Stray : boost::statechart::state< Stray, Started >, NamedState {
       map<int, pair<pg_query_t, epoch_t> > pending_queries;
 
-      Stray(my_context ctx);
+      explicit Stray(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1907,7 +1907,7 @@ public:
     struct GetInfo : boost::statechart::state< GetInfo, Peering >, NamedState {
       set<pg_shard_t> peer_info_requested;
 
-      GetInfo(my_context ctx);
+      explicit GetInfo(my_context ctx);
       void exit();
       void get_infos();
 
@@ -1929,7 +1929,7 @@ public:
       pg_shard_t auth_log_shard;
       boost::intrusive_ptr<MOSDPGLog> msg;
 
-      GetLog(my_context ctx);
+      explicit GetLog(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1950,7 +1950,7 @@ public:
     struct GetMissing : boost::statechart::state< GetMissing, Peering >, NamedState {
       set<pg_shard_t> peer_missing_requested;
 
-      GetMissing(my_context ctx);
+      explicit GetMissing(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1963,7 +1963,7 @@ public:
     };
 
     struct WaitUpThru : boost::statechart::state< WaitUpThru, Peering >, NamedState {
-      WaitUpThru(my_context ctx);
+      explicit WaitUpThru(my_context ctx);
       void exit();
 
       typedef boost::mpl::list <
@@ -1981,7 +1981,7 @@ public:
 	boost::statechart::custom_reaction< AdvMap >,
 	boost::statechart::custom_reaction< MNotifyRec >
 	> reactions;
-      Incomplete(my_context ctx);
+      explicit Incomplete(my_context ctx);
       boost::statechart::result react(const AdvMap &advmap);
       boost::statechart::result react(const MNotifyRec& infoevt);
       void exit();
@@ -2005,7 +2005,7 @@ public:
     boost::optional<RecoveryCtx> rctx;
 
   public:
-    RecoveryState(PG *pg)
+    explicit RecoveryState(PG *pg)
       : machine(this, pg), pg(pg), orig_ctx(0) {
       machine.initiate();
     }

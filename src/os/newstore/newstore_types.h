@@ -26,7 +26,7 @@ namespace ceph {
 struct cnode_t {
   uint32_t bits;   ///< how many bits of coll pgid are significant
 
-  cnode_t(int b=0) : bits(b) {}
+  explicit cnode_t(int b=0) : bits(b) {}
 
   void encode(bufferlist& bl) const;
   void decode(bufferlist::iterator& p);

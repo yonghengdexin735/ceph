@@ -308,7 +308,7 @@ private:
   }
 
 public:
-  RGW_Auth_S3_Keystone_ValidateToken(CephContext *_cct)
+  explicit RGW_Auth_S3_Keystone_ValidateToken(CephContext *_cct)
       : RGWHTTPClient(_cct) {
     get_str_list(cct->_conf->rgw_keystone_accepted_roles, roles_list);
   }

@@ -1106,7 +1106,7 @@ private:
   class C_Tick : public Context {
     Objecter *ob;
   public:
-    C_Tick(Objecter *o) : ob(o) {}
+    explicit C_Tick(Objecter *o) : ob(o) {}
     void finish(int r) { ob->tick(); }
   } *tick_event;
 
@@ -1116,7 +1116,7 @@ private:
   class RequestStateHook : public AdminSocketHook {
     Objecter *m_objecter;
   public:
-    RequestStateHook(Objecter *objecter);
+    explicit RequestStateHook(Objecter *objecter);
     bool call(std::string command, cmdmap_t& cmdmap, std::string format,
 	      bufferlist& out);
   };

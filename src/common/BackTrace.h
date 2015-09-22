@@ -15,7 +15,7 @@ struct BackTrace {
   size_t size;
   char **strings;
 
-  BackTrace(int s) : skip(s) {
+  explicit BackTrace(int s) : skip(s) {
     size = backtrace(array, max);
     strings = backtrace_symbols(array, size);
   }

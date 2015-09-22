@@ -94,7 +94,7 @@ class UsageLogger {
   class C_UsageLogTimeout : public Context {
     UsageLogger *logger;
   public:
-    C_UsageLogTimeout(UsageLogger *_l) : logger(_l) {}
+    explicit C_UsageLogTimeout(UsageLogger *_l) : logger(_l) {}
     void finish(int r) {
       logger->flush();
       logger->set_timer();

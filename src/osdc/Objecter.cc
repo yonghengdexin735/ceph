@@ -1998,7 +1998,7 @@ class C_CancelOp : public Context
   ceph_tid_t tid;
   Objecter *objecter;
 public:
-  C_CancelOp(Objecter *objecter) : objecter(objecter) {}
+  explicit C_CancelOp(Objecter *objecter) : objecter(objecter) {}
   void finish(int r) {
     objecter->op_cancel(tid, -ETIMEDOUT);
   }

@@ -130,7 +130,7 @@ class StripObjectMap: public GenericObjectMap {
   }
 
   RandomCache<ghobject_t, pair<coll_t, StripObjectHeaderRef> > caches;
-  StripObjectMap(KeyValueDB *db): GenericObjectMap(db),
+  explicit StripObjectMap(KeyValueDB *db): GenericObjectMap(db),
                                   lock("StripObjectMap::lock"),
                                   caches(g_conf->keyvaluestore_header_cache_size)
   {}
@@ -287,7 +287,7 @@ class KeyValueStore : public ObjectStore,
                        const coll_t &cid, const ghobject_t &oid);
     int submit_transaction();
 
-    BufferTransaction(KeyValueStore *store): store(store) {
+    explicit BufferTransaction(KeyValueStore *store): store(store) {
       t = store->backend->get_transaction();
     }
 

@@ -336,7 +336,7 @@ private:
   class Writer : public Thread {
     FileJournal *journal;
   public:
-    Writer(FileJournal *fj) : journal(fj) {}
+    explicit Writer(FileJournal *fj) : journal(fj) {}
     void *entry() {
       journal->write_thread_entry();
       return 0;
@@ -346,7 +346,7 @@ private:
   class WriteFinisher : public Thread {
     FileJournal *journal;
   public:
-    WriteFinisher(FileJournal *fj) : journal(fj) {}
+    explicit WriteFinisher(FileJournal *fj) : journal(fj) {}
     void *entry() {
       journal->write_finish_thread_entry();
       return 0;

@@ -64,7 +64,7 @@ class RocksDBStore : public KeyValueDB {
   class CompactThread : public Thread {
     RocksDBStore *db;
   public:
-    CompactThread(RocksDBStore *d) : db(d) {}
+    explicit CompactThread(RocksDBStore *d) : db(d) {}
     void *entry() {
       db->compact_thread_entry();
       return NULL;
@@ -134,7 +134,7 @@ public:
     rocksdb::WriteBatch *bat;
     RocksDBStore *db;
 
-    RocksDBTransactionImpl(RocksDBStore *_db);
+    explicit RocksDBTransactionImpl(RocksDBStore *_db);
     ~RocksDBTransactionImpl();
     void set(
       const string &prefix,
@@ -166,7 +166,7 @@ public:
   protected:
     rocksdb::Iterator *dbiter;
   public:
-    RocksDBWholeSpaceIteratorImpl(rocksdb::Iterator *iter) :
+    explicit RocksDBWholeSpaceIteratorImpl(rocksdb::Iterator *iter) :
       dbiter(iter) { }
     //virtual ~RocksDBWholeSpaceIteratorImpl() { }
     ~RocksDBWholeSpaceIteratorImpl();
