@@ -12,6 +12,11 @@ add_definitions("-DCEPH_LIBDIR=\"${libdir}\"")
 add_definitions("-DCEPH_PKGLIBDIR=\"${libdir}\"")
 add_definitions("-DHAVE_CONFIG_H -D__CEPH__ -D_FILE_OFFSET_BITS=64 -D_REENTRANT -D_THREAD_SAFE -D__STDC_FORMAT_MACROS -D_GNU_SOURCE")
 
+set(CMAKE_ASM_COMPILER  ${PROJECT_SOURCE_DIR}/src/yasm-wrapper)
+message(status " asm compiler ${CMAKE_ASM_COMPILER}")
+set(CMAKE_ASM_FLAGS "-f elf64")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -rdynamic -Wall -Wtype-limits -Wignored-qualifiers -Winit-self -Wpointer-arith -Werror=format-security -fno-strict-aliasing -fsigned-char -fPIC")
+
 execute_process(
   COMMAND yasm -f elf64 ${CMAKE_SOURCE_DIR}/src/common/crc32c_intel_fast_asm.S -o /dev/null
   RESULT_VARIABLE no_yasm
@@ -51,11 +56,6 @@ if(NOT rc)
   set(HAVE_BETTER_YASM_ELF64 1)
 endif(NOT rc)
 MESSAGE("HAVE_BETTER_YASM_ELF64=" ${HAVE_BETTER_YASM_ELF64})
-
-set(CMAKE_ASM_COMPILER  yasm)
-message(status " asm compiler ${CMAKE_ASM_COMPILER}")
-set(CMAKE_ASM_FLAGS "-f elf64")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -rdynamic -Wall -Wtype-limits -Wignored-qualifiers -Winit-self -Wpointer-arith -Werror=format-security -fno-strict-aliasing -fsigned-char -fPIC")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -ftemplate-depth-1024 -Wno-invalid-offsetof -Wnon-virtual-dtor -Wno-invalid-offsetof -Wstrict-null-sentinel -Woverloaded-virtual")
 
@@ -793,6 +793,7 @@ if(${ENABLE_SHARED})
     SOVERSION 1)
 endif(${ENABLE_SHARED})
   target_link_libraries(cephfs client global)
+  set_target_properties(cephfs PROPERTIES VERSION "1.0.0" SOVERSION "1")
   install(TARGETS cephfs DESTINATION lib)
   install(DIRECTORY
     "${CMAKE_SOURCE_DIR}/src/include/cephfs"
