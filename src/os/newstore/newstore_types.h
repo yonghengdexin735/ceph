@@ -170,7 +170,7 @@ struct wal_transaction_t {
 
   int64_t _bytes;  ///< cached byte count
 
-  wal_transaction_t() : _bytes(-1) {}
+  wal_transaction_t() : seq(0), _bytes(-1) {}
 
   uint64_t get_bytes() {
     if (_bytes < 0) {
