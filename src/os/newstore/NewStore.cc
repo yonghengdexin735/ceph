@@ -608,7 +608,8 @@ NewStore::NewStore(CephContext *cct, const string& path)
     kv_lock("NewStore::kv_lock"),
     kv_stop(false),
     logger(NULL),
-    reap_lock("NewStore::reap_lock")
+    reap_lock("NewStore::reap_lock"),
+    sharded(false)
 {
   _init_logger();
 }
