@@ -109,7 +109,9 @@ class AsyncCompressor {
 
  public:
   explicit AsyncCompressor(CephContext *c);
-  virtual ~AsyncCompressor() {}
+  virtual ~AsyncCompressor() {
+    delete compressor;
+  }
 
   int get_cpuid(int id) {
     if (coreids.empty())
