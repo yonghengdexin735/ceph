@@ -573,6 +573,7 @@ NewStore::NewStore(CephContext *cct, const string& path)
     coll_lock("NewStore::coll_lock"),
     fid_lock("NewStore::fid_lock"),
     nid_lock("NewStore::nid_lock"),
+    nid_last(0),
     nid_max(0),
     throttle_ops(cct, "newstore_max_ops", cct->_conf->newstore_max_ops),
     throttle_bytes(cct, "newstore_max_bytes", cct->_conf->newstore_max_bytes),
