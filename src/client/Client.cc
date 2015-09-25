@@ -23,10 +23,16 @@
 #include <fcntl.h>
 #include <sys/utsname.h>
 #include <sys/uio.h>
-#include <sys/xattr.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/fusion/include/std_pair.hpp>
+
+#if defined(__FreeBSD__)
+#define XATTR_CREATE    0x1
+#define XATTR_REPLACE   0x2
+#else
+#include <sys/xattr.h>
+#endif
 
 #if defined(__linux__)
 #include <linux/falloc.h>
@@ -106,6 +112,10 @@ using namespace std;
 
 #define  tout(cct)       if (!cct->_conf->client_trace.empty()) traceout
 
+// FreeBSD fails to define this
+#ifndef O_DSYNC
+#define O_DSYNC 0x0
+#endif
 // Darwin fails to define this
 #ifndef O_RSYNC
 #define O_RSYNC 0x0
@@ -4863,7 +4873,7 @@ void Client::handle_command_reply(MCommandReply *m)
 // -------------------
 // MOUNT
 
-int Client::mount(const std::string &mount_root)
+int Client::mount(const std::string &mount_root, bool require_mds)
 {
   Mutex::Locker lock(client_lock);
 
@@ -4880,6 +4890,20 @@ int Client::mount(const std::string &mount_root)
   tick(); // start tick
   
   ldout(cct, 2) << "mounted: have mdsmap " << mdsmap->get_epoch() << dendl;
+  if (require_mds) {
+    while (1) {
+      if (mdsmap->get_epoch() > 0) {
+        if (mdsmap->get_num_mds(CEPH_MDS_STATE_ACTIVE) == 0) {
+          ldout(cct, 10) << "no mds up: epoch=" << mdsmap->get_epoch() << dendl;
+          return CEPH_FUSE_NO_MDS_UP;
+        } else {
+          break;
+        }
+      } else {
+        wait_on_list(waiting_for_mdsmap);
+      }
+    }
+  }
 
   filepath fp(CEPH_INO_ROOT);
   if (!mount_root.empty())

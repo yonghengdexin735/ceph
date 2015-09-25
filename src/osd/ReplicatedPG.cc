@@ -2011,15 +2011,10 @@ bool ReplicatedPG::maybe_handle_cache(OpRequestRef op,
       }
 
       // Promote too?
-      bool promoting = false;
       if (!op->need_skip_promote()) {
-        promoting = maybe_promote(obc, missing_oid, oloc, in_hit_set,
-                                  pool.info.min_write_recency_for_promote,
-                                  OpRequestRef());
-      }
-      // purge the object in the cache if not promoting
-      if (!promoting) {
-	object_contexts.purge(obc->obs.oi.soid);
+        maybe_promote(obc, missing_oid, oloc, in_hit_set,
+	              pool.info.min_write_recency_for_promote,
+		      OpRequestRef());
       }
     } else {
       if (can_proxy_read)
@@ -8418,13 +8413,16 @@ int ReplicatedPG::find_object_context(const hobject_t& oid,
   // want the snapdir?
   if (oid.snap == CEPH_SNAPDIR) {
     // return head or snapdir, whichever exists.
-    ObjectContextRef obc = get_object_context(head, can_create);
+    ObjectContextRef headobc = get_object_context(head, can_create);
+    ObjectContextRef obc = headobc;
     if (!obc || !obc->obs.exists)
       obc = get_object_context(oid, can_create);
     if (!obc || !obc->obs.exists) {
       // if we have neither, we would want to promote the head.
       if (pmissing)
 	*pmissing = head;
+      if (pobc)
+	*pobc = headobc; // may be null
       return -ENOENT;
     }
     dout(10) << "find_object_context " << oid
@@ -8447,7 +8445,7 @@ int ReplicatedPG::find_object_context(const hobject_t& oid,
   }
 
   SnapSetContext *ssc = get_snapset_context(oid, can_create);
-  if (!ssc || !(ssc->exists)) {
+  if (!ssc || !(ssc->exists || can_create)) {
     dout(20) << __func__ << " " << oid << " no snapset" << dendl;
     if (pmissing)
       *pmissing = head;  // start by getting the head
@@ -8695,7 +8693,6 @@ SnapSetContext *ReplicatedPG::get_snapset_context(
   if (p != snapset_contexts.end()) {
     if (can_create || p->second->exists) {
       ssc = p->second;
-      ssc->exists = true;
     } else {
       return NULL;
     }
@@ -8718,6 +8715,9 @@ SnapSetContext *ReplicatedPG::get_snapset_context(
     if (bv.length()) {
       bufferlist::iterator bvp = bv.begin();
       ssc->snapset.decode(bvp);
+      ssc->exists = true;
+    } else {
+      ssc->exists = false;
     }
   }
   assert(ssc);
