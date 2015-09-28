@@ -115,7 +115,7 @@ int main(int argc, const char **argv, const char *envp[]) {
     public:
       CephFuse *cfuse;
       Client *client;
-      RemountTest() : Thread() {}
+      RemountTest() : cfuse(NULL), client(NULL) {}
       void init(CephFuse *cf, Client *cl) {
 	cfuse = cf;
 	client = cl;
