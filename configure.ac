@@ -10,7 +10,7 @@ AC_PREREQ(2.59)
 
 AC_INIT([ceph], [9.0.3], [ceph-devel@vger.kernel.org])
 
-AX_CXX_COMPILE_STDCXX_11(, mandatory)
+AX_CXX_COMPILE_STDCXX_14(noext, mandatory)
 
 # Create release string.  Used with VERSION for RPMs.
 RPM_RELEASE=0
@@ -766,11 +766,6 @@ AC_ARG_WITH([kinetic],
 AS_IF([test "x$with_kinetic" = "xyes"],
             [AC_DEFINE([HAVE_KINETIC], [1], [Defined if you have kinetic enabled])])
 AM_CONDITIONAL(WITH_KINETIC, [ test "$with_kinetic" = "yes" ])
-
-# check for c++11 (but do not enable it)
-old_cxxflags="$CXXFLAGS"
-AX_CXX_COMPILE_STDCXX_11([], [optional])
-CXXFLAGS="$old_cxxflags"
 
 # use rocksdb
 AC_ARG_WITH([librocksdb],
