@@ -188,7 +188,7 @@ public:
     LockState state;
 
   public:
-    explicit Context(RWLock& l) : lock(l) {}
+    explicit Context(RWLock& l) : lock(l), state(Untaken) {}
     Context(RWLock& l, LockState s) : lock(l), state(s) {}
 
     void get_write() {
