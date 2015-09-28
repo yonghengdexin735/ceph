@@ -850,7 +850,7 @@ logdump(void)
 		opnum = i+1 + (logcount/LOGSIZE)*LOGSIZE;
 		prt("%d(%3d mod 256): ", opnum, opnum%256);
 		lp = &oplog[i];
-		if ((closeopen = lp->operation < 0))
+		if ((closeopen = lp->operation) < 0)
 			lp->operation = ~ lp->operation;
 			
 		switch (lp->operation) {
