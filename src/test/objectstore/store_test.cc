@@ -1061,7 +1061,7 @@ public:
     // hash
     //boost::binomial_distribution<uint32_t> bin(0xFFFFFF, 0.5);
     ++seq;
-    return ghobject_t(hobject_t(name, string(), rand() & 2 ? CEPH_NOSNAP : rand(), rand() & 0xFF, poolid, ""));
+    return ghobject_t(hobject_t(name, string(), (rand() & 2) ? CEPH_NOSNAP : rand(), rand() & 0xFF, poolid, ""));
   }
 };
 
