@@ -8534,6 +8534,16 @@ int ReplicatedPG::find_object_context(const hobject_t& oid,
       *pobc = obc;
       return 0;
     }
+
+    if (pool.info.cache_mode != pg_pool_t::CACHEMODE_NONE) {
+      // cache tier does not necessarily have it.
+      ObjectContextRef obc = get_object_context(oid, can_create);
+      if (obc) {
+	*pobc = obc;
+	return 0;
+      }
+    }
+
     dout(10) << "find_object_context  " << head
 	     << " want " << oid.snap << " > snapset seq " << ssc->snapset.seq
 	     << " but head dne -- DNE"
