@@ -176,7 +176,7 @@ BuildRequires:  libboost_random1_58_0
 BuildRequires:	lttng-ust-devel
 BuildRequires:	libbabeltrace-devel
 %endif
-%if 0%{?suse_version} >= 1310
+%if 0%{?suse_version} == 1315
 BuildRequires:	lttng-ust-devel
 BuildRequires:  babeltrace-devel
 %endif
@@ -837,7 +837,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/rbd
 %{_bindir}/rbd-replay
 %{_bindir}/rbd-replay-many
-%if 0%{?fedora} || 0%{?rhel} == 6 || 0%{?suse_version} >= 1310
+%if 0%{?fedora} || 0%{?rhel} == 6 || 0%{?suse_version} == 1315
 %{_bindir}/rbd-replay-prep
 %endif
 %{_bindir}/ceph-post-file
