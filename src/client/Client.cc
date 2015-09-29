@@ -4914,6 +4914,26 @@ out:
   return r;
 }
 
+int Client::may_lookup(Inode *dir, int uid, int gid)
+{
+  if (uid < 0)
+    uid = geteuid();
+  if (gid < 0)
+    gid = getegid();
+
+  int r = _getattr(dir, CEPH_STAT_CAP_MODE, uid, gid);
+  if (r < 0)
+    goto out;
+
+  {
+    Client_UserGroups groups(this, uid, gid);
+    r = inode_permissions(dir, uid, groups, MAY_EXEC);
+  }
+out:
+  ldout(cct, 3) << __func__ << " " << dir << " = " << r <<  dendl;
+  return r;
+}
+
 int Client::may_create(Inode *dir, int uid, int gid)
 {
   if (uid < 0)
@@ -8893,9 +8913,15 @@ int Client::ll_lookup(Inode *parent, const char *name, struct stat *attr,
   tout(cct) << "ll_lookup" << std::endl;
   tout(cct) << name << std::endl;
 
+  int r = 0;
+  if (!cct->_conf->fuse_default_permissions) {
+    r = may_lookup(parent, uid, gid);
+    if (r < 0)
+      return r;
+  }
+
   string dname(name);
   InodeRef in;
-  int r = 0;
 
   r = _lookup(parent, dname, &in);
   if (r < 0) {
