@@ -1967,10 +1967,6 @@ int OSD::init()
     tick_timer_without_osd_lock.add_event_after(cct->_conf->osd_heartbeat_interval, new C_Tick_WithoutOSDLock(this));
   }
 
-  service.init();
-  service.publish_map(osdmap);
-  service.publish_superblock(superblock);
-
   osd_lock.Unlock();
 
   r = monc->authenticate();
@@ -1989,6 +1985,10 @@ int OSD::init()
   if (is_stopping())
     return 0;
 
+  service.init();
+  service.publish_map(osdmap);
+  service.publish_superblock(superblock);
+
   check_config();
 
   dout(10) << "ensuring pgs have consumed prior maps" << dendl;
@@ -1996,6 +1996,13 @@ int OSD::init()
   peering_wq.drain();
 
   dout(0) << "done with init, starting boot process" << dendl;
+
+  // subscribe to any pg creations
+  monc->sub_want("osd_pg_creates", last_pg_create_epoch, 0);
+
+  // we don't need to ask for an osdmap here; objecter will
+  //monc->sub_want("osdmap", osdmap->get_epoch(), CEPH_SUBSCRIBE_ONETIME);
+
   start_boot();
 
   return 0;
@@ -4428,10 +4435,6 @@ void OSD::ms_handle_connect(Connection *con)
       send_pg_stats(now);
 
       map_lock.put_read();
-
-      monc->sub_want("osd_pg_creates", last_pg_create_epoch, 0);
-      monc->sub_want("osdmap", osdmap->get_epoch(), CEPH_SUBSCRIBE_ONETIME);
-      monc->renew_subs();
     }
 
     // full map requests may happen while active or pre-boot
