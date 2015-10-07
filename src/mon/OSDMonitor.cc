@@ -2402,8 +2402,8 @@ void OSDMonitor::send_incremental(MonOpRequestRef op, epoch_t first)
   MonSession *s = op->get_session();
   assert(s);
 
-  if (s->proxy_con) {
-#warning fixme we need to check a feature bit here
+  if (s->proxy_con &&
+      s->proxy_con->has_feature(CEPH_FEATURE_MON_ROUTE_OSDMAP)) {
     // oh, we can tell the other mon to do it
     dout(10) << __func__ << " asking proxying mon to send_incremental from "
 	     << first << dendl;
