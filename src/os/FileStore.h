@@ -141,8 +141,7 @@ private:
   int init_index(coll_t c);
 
   void _kludge_temp_object_collection(coll_t& cid, const ghobject_t& oid) {
-    if ((oid.hobj.pool < -1 && !cid.is_temp()) || // normal temp case
-	(oid.hobj.pool == -1 && !cid.is_meta()))  // hammer temp case, e.g. 4.18s0_head/0:-1/00000000/temp_4.18s2_2_4115_1/head
+    if (oid.hobj.pool < -1 && !cid.is_temp())
       cid = cid.get_temp();
   }
   void init_temp_collections();
