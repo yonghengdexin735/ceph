@@ -1990,20 +1990,22 @@ bool ReplicatedPG::maybe_handle_cache(OpRequestRef op,
   MOSDOp *m = static_cast<MOSDOp*>(op->get_req());
   const object_locator_t& oloc = m->get_object_locator();
 
-  if (must_promote || op->need_promote()) {
-    promote_object(obc, missing_oid, oloc, op);
-    return true;
-  }
-
   if (op->need_skip_handle_cache()) {
     return false;
   }
 
-  // older versions do not proxy the feature bits.
-  bool can_proxy_read = get_osdmap()->get_up_osd_features() &
-    CEPH_FEATURE_OSD_PROXY_FEATURES;
-  bool can_proxy_write = get_osdmap()->get_up_osd_features() &
-    CEPH_FEATURE_OSD_PROXY_WRITE_FEATURES;
+  // we can proxy the op if all osds support proxying the features and
+  // we are not required to promote
+  bool can_proxy_read =
+    (get_osdmap()->get_up_osd_features() & CEPH_FEATURE_OSD_PROXY_FEATURES) &&
+    !must_promote &&
+    !op->need_promote();
+  bool can_proxy_write =
+    (get_osdmap()->get_up_osd_features() &
+     CEPH_FEATURE_OSD_PROXY_WRITE_FEATURES) &&
+    !must_promote &&
+    !op->need_promote();
+
   OpRequestRef promote_op;
 
   switch (pool.info.cache_mode) {
